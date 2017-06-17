@@ -5,7 +5,7 @@ import android.app.Application;
 import com.CYinHttpClient.Download.File.FileStorageManager;
 
 /**
- * Created by sunrongxin on 2017/6/15.
+ * Created by Sun Rx on 2017/6/15.
  */
 
 public class MyApplication extends Application {
