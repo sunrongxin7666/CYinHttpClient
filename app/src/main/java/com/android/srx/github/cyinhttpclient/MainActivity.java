@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
 		File file = FileStorageManager.getInstance().getFileByName("fileStoragetest");
 		Logger.debug("SRX",file.getAbsolutePath());
 		final String url = "http://szimg.mukewang.com/5763765d0001352105400300-360-202.jpg";
+
 		DownloadManager.getInstance().download(url, new DownloadCallback() {
             @Override
             public void success(File file) {

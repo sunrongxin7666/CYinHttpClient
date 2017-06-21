@@ -2,6 +2,7 @@ package com.CYinHttpClient.Download;
 
 import com.CYinHttpClient.Download.Http.DownloadCallback;
 import com.CYinHttpClient.Download.Http.HttpManager;
+import com.CYinHttpClient.Download.Utils.Logger;
 
 import java.io.IOException;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -20,6 +21,7 @@ import okhttp3.Response;
 
 public class DownloadManager {
 	private static final int MAX_THREAD = 2  ;
+	private static final String TAG = "SRX" ;
 	private static DownloadManager sDownloadManage = new DownloadManager();
 	//线程池
 	private static ThreadPoolExecutor sThreadPool =
@@ -57,6 +59,7 @@ public class DownloadManager {
 					return;
 				}
 				long length = response.body().contentLength();
+				Logger.debug(TAG,"Contentlength："+length);
 				if(length == -1){
 					callback.fail(HttpManager.CONTENT_LENGTH_ERROR_CODE,"无法获取网络长度");
 				}
