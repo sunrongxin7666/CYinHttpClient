@@ -83,7 +83,7 @@ public class DownloadManager {
 	private void processDownload(String url, long length, DownloadCallback callback) {
 		long threadDownloadSize = length / MAX_THREAD;
 		for (int i = 0; i < MAX_THREAD ; i++) {
-			long startSize = i*threadDownloadSize;
+			long startSize = i * threadDownloadSize;
 			long endSize = 0;
 			if (endSize == MAX_THREAD - 1) {
 				endSize = length - 1;
