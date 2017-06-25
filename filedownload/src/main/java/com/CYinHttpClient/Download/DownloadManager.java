@@ -3,9 +3,13 @@ package com.CYinHttpClient.Download;
 import com.CYinHttpClient.Download.Http.DownloadCallback;
 import com.CYinHttpClient.Download.Http.HttpManager;
 import com.CYinHttpClient.Download.Utils.Logger;
+import com.CYinHttpClient.Download.db.DownloadHelper;
+import com.android.srx.github.dbgenerator.DownloadEntity;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -39,6 +43,8 @@ public class DownloadManager {
 			return thread;
 		}
 	});
+	private List<DownloadEntity> mCache;
+	private long mLength;
 
 	public static DownloadManager getInstance(){
 		return sDownloadManage;
@@ -56,42 +62,69 @@ public class DownloadManager {
 			callback.fail(HttpManager.TASK_RUNNING_ERROR_CODE,"Task is running");
 		}
 		mHashSet.add(downloadTask);
-		HttpManager.getInstance().asyncRequest(url, new Callback() {
-			@Override
-			public void onFailure(Call call, IOException e) {
-				callback.fail(HttpManager.NETWORK_ERROR_CODE,"网络错误");
-				finsh(downloadTask);
-			}
 
-			@Override
-			public void onResponse(Call call, Response response) throws IOException {
-				if(!response.isSuccessful()&&callback!=null){
+		mCache = DownloadHelper.getInstance().getAll(url);
+		if(mCache == null || mCache.size()==0){
+			HttpManager.getInstance().asyncRequest(url, new Callback() {
+				@Override
+				public void onFailure(Call call, IOException e) {
 					callback.fail(HttpManager.NETWORK_ERROR_CODE,"网络错误");
-					return;
+					finsh(downloadTask);
 				}
-				long length = response.body().contentLength();
-				Logger.debug(TAG,"Contentlength："+length);
-				if(length == -1){
-					callback.fail(HttpManager.CONTENT_LENGTH_ERROR_CODE,"无法获取网络长度");
+
+				@Override
+				public void onResponse(Call call, Response response) throws IOException {
+					if(!response.isSuccessful()&&callback!=null){
+						callback.fail(HttpManager.NETWORK_ERROR_CODE,"网络错误");
+						return;
+					}
+					long length = response.body().contentLength();
+					Logger.debug(TAG,"Contentlength："+length);
+					if(length == -1){
+						callback.fail(HttpManager.CONTENT_LENGTH_ERROR_CODE,"无法获取网络长度");
+					}
+					processDownload(url,length,callback, mCache);
+					finsh(downloadTask);
 				}
-				processDownload(url,length,callback);
-				finsh(downloadTask);
+			});
+		}
+		else { // cache is here
+			for (int i = 0; i < mCache.size(); i++) {
+				DownloadEntity entity = mCache.get(i);
+				if (i == mCache.size() - 1) {
+					mLength = entity.getEnd_position() + 1;
+				}
+				long startSize = entity.getStart_position() + entity.getProgress_position();
+				long endSize = entity.getEnd_position();
+				sThreadPool.execute(new DownloadRunnable(startSize, endSize, url, callback, entity));
 			}
-		});
+		}
+
 	}
 
-	private void processDownload(String url, long length, DownloadCallback callback) {
+	private void processDownload(String url, long length, DownloadCallback callback, List<DownloadEntity> cache) {
+
 		long threadDownloadSize = length / MAX_THREAD;
-		for (int i = 0; i < MAX_THREAD ; i++) {
-			long startSize = i * threadDownloadSize;
-			long endSize = 0;
-			if (endSize == MAX_THREAD - 1) {
-				endSize = length - 1;
-			} else {
-				endSize = (i + 1) * threadDownloadSize - 1;
-			}
-			sThreadPool.execute(new DownloadRunnable(startSize,endSize,url,callback));
+		if(cache == null || cache.size()==0){
+			cache  = new ArrayList<>();
 		}
+
+		for (int i = 0; i < MAX_THREAD ; i++) {
+			processByOneThread(url, length, callback, threadDownloadSize, i);
+		}
+	}
+
+	private void processByOneThread(String url, long length, DownloadCallback callback, long threadDownloadSize, int i) {
+
+		long startSize = i * threadDownloadSize;
+		long endSize = 0;
+		if (endSize == MAX_THREAD - 1) {
+			endSize = length - 1;
+		} else {
+			endSize = (i + 1) * threadDownloadSize - 1;
+		}
+		DownloadEntity entity = new DownloadEntity(i,startSize,endSize,0,url,i+1);
+		sThreadPool.execute(new DownloadRunnable(startSize,endSize,url,callback,entity));
 	}
 
 }

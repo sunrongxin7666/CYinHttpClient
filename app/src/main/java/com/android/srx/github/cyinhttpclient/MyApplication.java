@@ -4,7 +4,8 @@ import android.app.Application;
 
 import com.CYinHttpClient.Download.File.FileStorageManager;
 import com.CYinHttpClient.Download.Http.HttpManager;
-import com.android.srx.github.dbgenerator.DownloadHelper;
+import com.CYinHttpClient.Download.db.DownloadHelper;
+import com.facebook.stetho.Stetho;
 
 /**
  * Created by Sun Rx on 2017/6/15.
@@ -17,5 +18,6 @@ public class MyApplication extends Application {
 		FileStorageManager.getInstance().init(this);
 		HttpManager.getInstance().init(this);
 		DownloadHelper.getInstance().init(this);
+		Stetho.initializeWithDefaults(this);
 	}
 }

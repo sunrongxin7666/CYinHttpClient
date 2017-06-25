@@ -14,7 +14,7 @@ public class DownloadEntity {
 	private long id;
 	private long start_position;
 	private long end_position;
-	private long progress_postion;
+	private long progress_position;
 
 	private String download_url;
 
@@ -26,7 +26,7 @@ public class DownloadEntity {
 		this.id = id;
 		this.start_position = start_position;
 		this.end_position = end_position;
-		this.progress_postion = progress_postion;
+		this.progress_position = progress_postion;
 		this.download_url = download_url;
 		this.thread_id = thread_id;
 	}
@@ -59,12 +59,12 @@ public class DownloadEntity {
 		this.end_position = end_position;
 	}
 
-	public long getProgress_postion() {
-		return this.progress_postion;
+	public long getProgress_position() {
+		return this.progress_position;
 	}
 
-	public void setProgress_postion(long progress_postion) {
-		this.progress_postion = progress_postion;
+	public void setProgress_position(long progress_position) {
+		this.progress_position = progress_position;
 	}
 
 	public String getDownload_url() {

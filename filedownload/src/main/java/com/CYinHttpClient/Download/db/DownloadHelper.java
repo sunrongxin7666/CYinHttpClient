@@ -1,8 +1,9 @@
-package com.android.srx.github.dbgenerator;
+package com.CYinHttpClient.Download.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.android.srx.github.dbgenerator.DownloadEntity;
 import com.android.srx.github.dbgenerator.gen.DaoMaster;
 import com.android.srx.github.dbgenerator.gen.DaoSession;
 import com.android.srx.github.dbgenerator.gen.DownloadEntityDao;
@@ -29,13 +30,18 @@ public class DownloadHelper {
 		SQLiteDatabase db = helper.getWritableDatabase();
 		mMaster = new DaoMaster(db);
 		mSession = mMaster.newSession();
+		mDao = mSession.getDownloadEntityDao();
 	}
 	DaoMaster mMaster;
 	DaoSession mSession;
 	DownloadEntityDao mDao;
 
-	public void insert(DownloadEntity entity){
-		mDao.insertOrReplace(entity);
+	public long insert(DownloadEntity entity){
+		return mDao.insertOrReplace(entity);
+	}
+
+	public void insertSyn(DownloadEntity entity){
+		entity.setId(mDao.insertOrReplace(entity));
 	}
 
 	public List<DownloadEntity> getAll(String url){

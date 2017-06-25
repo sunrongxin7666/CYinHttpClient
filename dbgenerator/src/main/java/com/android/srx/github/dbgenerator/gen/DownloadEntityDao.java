@@ -45,7 +45,7 @@ public class DownloadEntityDao extends AbstractDao<DownloadEntity, Long> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"DOWNLOAD_ENTITY\" (" + //
-                "\"_id\" INTEGER PRIMARY KEY NOT NULL ," + // 0: id
+                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ," + // 0: id
                 "\"START_POSITION\" INTEGER NOT NULL ," + // 1: start_position
                 "\"END_POSITION\" INTEGER NOT NULL ," + // 2: end_position
                 "\"PROGRESS_POSTION\" INTEGER NOT NULL ," + // 3: progress_postion
@@ -65,7 +65,7 @@ public class DownloadEntityDao extends AbstractDao<DownloadEntity, Long> {
         stmt.bindLong(1, entity.getId());
         stmt.bindLong(2, entity.getStart_position());
         stmt.bindLong(3, entity.getEnd_position());
-        stmt.bindLong(4, entity.getProgress_postion());
+        stmt.bindLong(4, entity.getProgress_position());
  
         String download_url = entity.getDownload_url();
         if (download_url != null) {
@@ -80,7 +80,7 @@ public class DownloadEntityDao extends AbstractDao<DownloadEntity, Long> {
         stmt.bindLong(1, entity.getId());
         stmt.bindLong(2, entity.getStart_position());
         stmt.bindLong(3, entity.getEnd_position());
-        stmt.bindLong(4, entity.getProgress_postion());
+        stmt.bindLong(4, entity.getProgress_position());
  
         String download_url = entity.getDownload_url();
         if (download_url != null) {
@@ -112,7 +112,7 @@ public class DownloadEntityDao extends AbstractDao<DownloadEntity, Long> {
         entity.setId(cursor.getLong(offset + 0));
         entity.setStart_position(cursor.getLong(offset + 1));
         entity.setEnd_position(cursor.getLong(offset + 2));
-        entity.setProgress_postion(cursor.getLong(offset + 3));
+        entity.setProgress_position(cursor.getLong(offset + 3));
         entity.setDownload_url(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
         entity.setThread_id(cursor.getInt(offset + 5));
      }

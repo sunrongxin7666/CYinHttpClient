@@ -4,6 +4,8 @@ import com.CYinHttpClient.Download.File.FileStorageManager;
 import com.CYinHttpClient.Download.Http.DownloadCallback;
 import com.CYinHttpClient.Download.Http.HttpManager;
 import com.CYinHttpClient.Download.Utils.Logger;
+import com.CYinHttpClient.Download.db.DownloadHelper;
+import com.android.srx.github.dbgenerator.DownloadEntity;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,12 +24,20 @@ public class DownloadRunnable implements Runnable {
 	private long mEnd;
 	private String mUrl;
 	private DownloadCallback mCallback;
-
+	private DownloadEntity mEntity;
 	public DownloadRunnable(long start, long end, String url, DownloadCallback callback) {
 		mStart = start;
 		mEnd = end;
 		mUrl = url;
 		mCallback = callback;
+	}
+
+	public DownloadRunnable(long start, long end, String url, DownloadCallback callback, DownloadEntity entity) {
+		mStart = start;
+		mEnd = end;
+		mUrl = url;
+		mCallback = callback;
+		mEntity = entity;
 	}
 
 	@Override
@@ -38,7 +48,7 @@ public class DownloadRunnable implements Runnable {
 		}
 		File file = FileStorageManager.getInstance().getFileByName(mUrl);
 
-		//long finshProgress = mEntity.getProgress_position() == null ? 0 : mEntity.getProgress_position();
+		long finshProgress = mEntity.getProgress_position() == 0 ? 0 : mEntity.getProgress_position();
 		long progress = 0;
 		try {
 			RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rwd");
@@ -50,11 +60,11 @@ public class DownloadRunnable implements Runnable {
 			while ((len = inStream.read(buffer, 0, buffer.length)) != -1) {
 				randomAccessFile.write(buffer, 0, len);
 				progress += len;
-				//mEntity.setProgress_position(progress);
+				mEntity.setProgress_position(progress);
 				Logger.debug("nate", "progress  ----->" + progress);
 			}
 
-			//mEntity.setProgress_position(mEntity.getProgress_position() + finshProgress);
+			mEntity.setProgress_position(mEntity.getProgress_position() + finshProgress);
 			randomAccessFile.close();
 			mCallback.success(file);
 		} catch (FileNotFoundException e) {
@@ -62,7 +72,8 @@ public class DownloadRunnable implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			//DownloadHelper.getInstance().insert(mEntity);
+			long id = DownloadHelper.getInstance().insert(mEntity);
+			mEntity.setId(id);
 		}
 
 	}
