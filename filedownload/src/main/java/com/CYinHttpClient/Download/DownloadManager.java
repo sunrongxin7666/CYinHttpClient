@@ -1,15 +1,19 @@
 package com.CYinHttpClient.Download;
 
+import com.CYinHttpClient.Download.File.FileStorageManager;
 import com.CYinHttpClient.Download.Http.DownloadCallback;
 import com.CYinHttpClient.Download.Http.HttpManager;
 import com.CYinHttpClient.Download.Utils.Logger;
 import com.CYinHttpClient.Download.db.DownloadHelper;
 import com.android.srx.github.dbgenerator.DownloadEntity;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -26,9 +30,12 @@ import okhttp3.Response;
 
 public class DownloadManager {
 	private static final int MAX_THREAD = 2  ;
+	public final static int LOCAL_PROGRESS_SIZE = 1;
+
 	private static final String TAG = "SRX" ;
 	private static DownloadManager sDownloadManage = new DownloadManager();
 	private HashSet<DownloadTask> mHashSet = new HashSet<>();
+	private static ExecutorService sLocalProgressPool = Executors.newFixedThreadPool(LOCAL_PROGRESS_SIZE);
 	//线程池
 	private static ThreadPoolExecutor sThreadPool =
 			new ThreadPoolExecutor(MAX_THREAD, MAX_THREAD, 60, TimeUnit.MILLISECONDS,
@@ -99,6 +106,26 @@ public class DownloadManager {
 				sThreadPool.execute(new DownloadRunnable(startSize, endSize, url, callback, entity));
 			}
 		}
+		sLocalProgressPool.execute(new Runnable() {
+			@Override
+			public void run() {
+				while (true) {
+					try {
+						Thread.sleep(500);
+						File file = FileStorageManager.getInstance().getFileByName(url);
+						long fileSize = file.length();
+						int progress = (int) (fileSize * 100.0 / mLength);
+						if (progress >= 100) {
+							callback.progress(progress);
+							return;
+						}
+						callback.progress(progress);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
 
 	}
 

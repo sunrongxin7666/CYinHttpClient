@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.CYinHttpClient.Download.DownloadManager;
 import com.CYinHttpClient.Download.File.FileStorageManager;
@@ -17,17 +18,20 @@ import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
 	private ImageView mImageView;
+	private ProgressBar mProgress;
+
 	private int count = 0;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		mImageView = (ImageView) findViewById(R.id.image_view);
+		mProgress = (ProgressBar) findViewById(R.id.progress);
 
-		File file = FileStorageManager.getInstance().getFileByName("fileStoragetest");
-		Logger.debug("SRX",file.getAbsolutePath());
-		final String url = "http://szimg.mukewang.com/5763765d0001352105400300-360-202.jpg";
-		//final String url = "http://shouji.360tpcdn.com/160901/84c090897cbf0158b498da0f42f73308/com.icoolme.android.weather_2016090200.apk";
+		//File file = FileStorageManager.getInstance().getFileByName("fileStoragetest");
+		//Logger.debug("SRX",file.getAbsolutePath());
+		//final String url = "http://szimg.mukewang.com/5763765d0001352105400300-360-202.jpg";
+		final String url = "http://shouji.360tpcdn.com/160901/84c090897cbf0158b498da0f42f73308/com.icoolme.android.weather_2016090200.apk";
 		DownloadManager.getInstance().download(url, new DownloadCallback() {
             @Override
             public void success(File file) {
@@ -55,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void progress(int progress) {
                 Logger.debug("nate", "progress    " + progress);
-                //mProgress.setProgress(progress);
+                mProgress.setProgress(progress);
 
             }
         });

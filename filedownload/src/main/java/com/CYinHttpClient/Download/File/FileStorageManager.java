@@ -50,6 +50,8 @@ public class FileStorageManager {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		} else{
+			//file.delete();
 		}
 
 		return file;
