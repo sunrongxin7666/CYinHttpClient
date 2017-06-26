@@ -123,7 +123,7 @@ public class DownloadManager {
 		} else {
 			endSize = (i + 1) * threadDownloadSize - 1;
 		}
-		DownloadEntity entity = new DownloadEntity(i,startSize,endSize,0,url,i+1);
+		DownloadEntity entity = new DownloadEntity(null,startSize,endSize,(long)0,url,i+1);
 		sThreadPool.execute(new DownloadRunnable(startSize,endSize,url,callback,entity));
 	}
 

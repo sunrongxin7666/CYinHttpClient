@@ -24,10 +24,10 @@ public class DownloadEntityDao extends AbstractDao<DownloadEntity, Long> {
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property Id = new Property(0, long.class, "id", true, "_id");
-        public final static Property Start_position = new Property(1, long.class, "start_position", false, "START_POSITION");
-        public final static Property End_position = new Property(2, long.class, "end_position", false, "END_POSITION");
-        public final static Property Progress_postion = new Property(3, long.class, "progress_postion", false, "PROGRESS_POSTION");
+        public final static Property Id = new Property(0, Long.class, "id", true, "_id");
+        public final static Property Start_position = new Property(1, Long.class, "start_position", false, "START_POSITION");
+        public final static Property End_position = new Property(2, Long.class, "end_position", false, "END_POSITION");
+        public final static Property Progress_position = new Property(3, Long.class, "progress_position", false, "PROGRESS_POSITION");
         public final static Property Download_url = new Property(4, String.class, "download_url", false, "DOWNLOAD_URL");
         public final static Property Thread_id = new Property(5, int.class, "thread_id", false, "THREAD_ID");
     }
@@ -45,10 +45,10 @@ public class DownloadEntityDao extends AbstractDao<DownloadEntity, Long> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"DOWNLOAD_ENTITY\" (" + //
-                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ," + // 0: id
-                "\"START_POSITION\" INTEGER NOT NULL ," + // 1: start_position
-                "\"END_POSITION\" INTEGER NOT NULL ," + // 2: end_position
-                "\"PROGRESS_POSTION\" INTEGER NOT NULL ," + // 3: progress_postion
+                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
+                "\"START_POSITION\" INTEGER," + // 1: start_position
+                "\"END_POSITION\" INTEGER," + // 2: end_position
+                "\"PROGRESS_POSITION\" INTEGER," + // 3: progress_position
                 "\"DOWNLOAD_URL\" TEXT," + // 4: download_url
                 "\"THREAD_ID\" INTEGER NOT NULL );"); // 5: thread_id
     }
@@ -62,10 +62,26 @@ public class DownloadEntityDao extends AbstractDao<DownloadEntity, Long> {
     @Override
     protected final void bindValues(DatabaseStatement stmt, DownloadEntity entity) {
         stmt.clearBindings();
-        stmt.bindLong(1, entity.getId());
-        stmt.bindLong(2, entity.getStart_position());
-        stmt.bindLong(3, entity.getEnd_position());
-        stmt.bindLong(4, entity.getProgress_position());
+ 
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
+        }
+ 
+        Long start_position = entity.getStart_position();
+        if (start_position != null) {
+            stmt.bindLong(2, start_position);
+        }
+ 
+        Long end_position = entity.getEnd_position();
+        if (end_position != null) {
+            stmt.bindLong(3, end_position);
+        }
+ 
+        Long progress_position = entity.getProgress_position();
+        if (progress_position != null) {
+            stmt.bindLong(4, progress_position);
+        }
  
         String download_url = entity.getDownload_url();
         if (download_url != null) {
@@ -77,10 +93,26 @@ public class DownloadEntityDao extends AbstractDao<DownloadEntity, Long> {
     @Override
     protected final void bindValues(SQLiteStatement stmt, DownloadEntity entity) {
         stmt.clearBindings();
-        stmt.bindLong(1, entity.getId());
-        stmt.bindLong(2, entity.getStart_position());
-        stmt.bindLong(3, entity.getEnd_position());
-        stmt.bindLong(4, entity.getProgress_position());
+ 
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
+        }
+ 
+        Long start_position = entity.getStart_position();
+        if (start_position != null) {
+            stmt.bindLong(2, start_position);
+        }
+ 
+        Long end_position = entity.getEnd_position();
+        if (end_position != null) {
+            stmt.bindLong(3, end_position);
+        }
+ 
+        Long progress_position = entity.getProgress_position();
+        if (progress_position != null) {
+            stmt.bindLong(4, progress_position);
+        }
  
         String download_url = entity.getDownload_url();
         if (download_url != null) {
@@ -91,16 +123,16 @@ public class DownloadEntityDao extends AbstractDao<DownloadEntity, Long> {
 
     @Override
     public Long readKey(Cursor cursor, int offset) {
-        return cursor.getLong(offset + 0);
+        return cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0);
     }    
 
     @Override
     public DownloadEntity readEntity(Cursor cursor, int offset) {
         DownloadEntity entity = new DownloadEntity( //
-            cursor.getLong(offset + 0), // id
-            cursor.getLong(offset + 1), // start_position
-            cursor.getLong(offset + 2), // end_position
-            cursor.getLong(offset + 3), // progress_postion
+            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
+            cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // start_position
+            cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2), // end_position
+            cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3), // progress_position
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // download_url
             cursor.getInt(offset + 5) // thread_id
         );
@@ -109,10 +141,10 @@ public class DownloadEntityDao extends AbstractDao<DownloadEntity, Long> {
      
     @Override
     public void readEntity(Cursor cursor, DownloadEntity entity, int offset) {
-        entity.setId(cursor.getLong(offset + 0));
-        entity.setStart_position(cursor.getLong(offset + 1));
-        entity.setEnd_position(cursor.getLong(offset + 2));
-        entity.setProgress_position(cursor.getLong(offset + 3));
+        entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
+        entity.setStart_position(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
+        entity.setEnd_position(cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2));
+        entity.setProgress_position(cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3));
         entity.setDownload_url(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
         entity.setThread_id(cursor.getInt(offset + 5));
      }
@@ -134,7 +166,7 @@ public class DownloadEntityDao extends AbstractDao<DownloadEntity, Long> {
 
     @Override
     public boolean hasKey(DownloadEntity entity) {
-        throw new UnsupportedOperationException("Unsupported for entities with a non-null key");
+        return entity.getId() != null;
     }
 
     @Override

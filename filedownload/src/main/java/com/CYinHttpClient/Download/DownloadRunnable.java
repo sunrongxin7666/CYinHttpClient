@@ -72,8 +72,7 @@ public class DownloadRunnable implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			long id = DownloadHelper.getInstance().insert(mEntity);
-			mEntity.setId(id);
+			DownloadHelper.getInstance().insert(mEntity);
 		}
 
 	}

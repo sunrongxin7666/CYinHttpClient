@@ -11,22 +11,22 @@ import org.greenrobot.greendao.annotation.Generated;
 @Entity
 public class DownloadEntity {
 	@Id(autoincrement = true)
-	private long id;
-	private long start_position;
-	private long end_position;
-	private long progress_position;
+	private Long id;
+	private Long start_position;
+	private Long end_position;
+	private Long progress_position;
 
 	private String download_url;
 
 	private int thread_id;
 
-	@Generated(hash = 274730861)
-	public DownloadEntity(long id, long start_position, long end_position,
-			long progress_postion, String download_url, int thread_id) {
+	@Generated(hash = 1541426413)
+	public DownloadEntity(Long id, Long start_position, Long end_position,
+			Long progress_position, String download_url, int thread_id) {
 		this.id = id;
 		this.start_position = start_position;
 		this.end_position = end_position;
-		this.progress_position = progress_postion;
+		this.progress_position = progress_position;
 		this.download_url = download_url;
 		this.thread_id = thread_id;
 	}
@@ -35,35 +35,35 @@ public class DownloadEntity {
 	public DownloadEntity() {
 	}
 
-	public long getId() {
+	public Long getId() {
 		return this.id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public long getStart_position() {
+	public Long getStart_position() {
 		return this.start_position;
 	}
 
-	public void setStart_position(long start_position) {
+	public void setStart_position(Long start_position) {
 		this.start_position = start_position;
 	}
 
-	public long getEnd_position() {
+	public Long getEnd_position() {
 		return this.end_position;
 	}
 
-	public void setEnd_position(long end_position) {
+	public void setEnd_position(Long end_position) {
 		this.end_position = end_position;
 	}
 
-	public long getProgress_position() {
+	public Long getProgress_position() {
 		return this.progress_position;
 	}
 
-	public void setProgress_position(long progress_position) {
+	public void setProgress_position(Long progress_position) {
 		this.progress_position = progress_position;
 	}
 

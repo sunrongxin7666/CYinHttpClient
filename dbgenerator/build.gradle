@@ -21,7 +21,7 @@ android {
     }
 }
 greendao{
-    schemaVersion 3
+    schemaVersion 4
     daoPackage 'com.android.srx.github.dbgenerator.gen'
     targetGenDir 'src/main/java'
 }
@@ -36,7 +36,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     testCompile 'junit:junit:4.12'
 
-    compile 'org.greenrobot:greendao:3.2.0'
-    compile 'org.greenrobot:greendao-generator:3.2.0'
+    compile 'org.greenrobot:greendao:3.2.2'
+    //compile 'org.greenrobot:greendao-generator:3.2.0'
 
 }
