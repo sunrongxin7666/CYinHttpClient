@@ -29,6 +29,23 @@ public class FileStorageManager {
 		this.mContext = context;
 	}
 
+	public void deleteByName(String url){
+		File parent;
+
+		// if SDCard here
+		if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+			parent = mContext.getExternalCacheDir();
+		} else {
+			parent = mContext.getCacheDir();
+		}
+
+		String fileName = Md5Utils.generateCode(url);
+
+		File file = new File(parent, fileName);
+		if (file.exists()) {
+			file.delete();
+		}
+	}
 
 	public File getFileByName(String url) {
 

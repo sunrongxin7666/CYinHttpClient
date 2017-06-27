@@ -29,27 +29,15 @@ import okhttp3.Response;
  */
 
 public class DownloadManager {
-	private static final int MAX_THREAD = 2  ;
+	public static final int MAX_THREAD = 2  ;
 	public final static int LOCAL_PROGRESS_SIZE = 1;
 
 	private static final String TAG = "SRX" ;
 	private static DownloadManager sDownloadManage = new DownloadManager();
 	private HashSet<DownloadTask> mHashSet = new HashSet<>();
-	private static ExecutorService sLocalProgressPool = Executors.newFixedThreadPool(LOCAL_PROGRESS_SIZE);
+	private static ExecutorService sLocalProgressPool;
 	//线程池
-	private static ThreadPoolExecutor sThreadPool =
-			new ThreadPoolExecutor(MAX_THREAD, MAX_THREAD, 60, TimeUnit.MILLISECONDS,
-					                      new LinkedBlockingDeque<Runnable>(),
-					                      new ThreadFactory() {
-		private AtomicInteger mInteger = new AtomicInteger(1);
-
-		@Override
-		public Thread newThread(Runnable runnable) {
-			//对线程统一编号管理
-			Thread thread = new Thread(runnable, "download thread #" + mInteger.getAndIncrement());
-			return thread;
-		}
-	});
+	private static ThreadPoolExecutor sThreadPool;
 	private List<DownloadEntity> mCache;
 	private long mLength;
 
@@ -58,6 +46,25 @@ public class DownloadManager {
 	}
 
 	private DownloadManager(){
+	}
+	public void init(DownloadConfig config) {
+		sThreadPool = new ThreadPoolExecutor(config.getCoreThreadSize(),
+				                                    config.getMaxThreadSize(),
+				                                    60,
+				                                    TimeUnit.MILLISECONDS,
+				                                    new LinkedBlockingDeque<Runnable>(),
+				                                    new ThreadFactory() {
+			private AtomicInteger mInteger = new AtomicInteger(1);
+
+			@Override
+			public Thread newThread(Runnable runnable) {
+				Thread thread = new Thread(runnable, "download thread #" + mInteger.getAndIncrement());
+				return thread;
+			}
+		});
+
+		sLocalProgressPool = Executors.newFixedThreadPool(config.getLocalProgressThreadSize());
+
 	}
 
 	public void finsh(DownloadTask task){
@@ -85,12 +92,12 @@ public class DownloadManager {
 						callback.fail(HttpManager.NETWORK_ERROR_CODE,"网络错误");
 						return;
 					}
-					long length = response.body().contentLength();
-					Logger.debug(TAG,"Contentlength："+length);
-					if(length == -1){
+					mLength = response.body().contentLength();
+					Logger.debug(TAG,"Contentlength："+mLength);
+					if(mLength == -1){
 						callback.fail(HttpManager.CONTENT_LENGTH_ERROR_CODE,"无法获取网络长度");
 					}
-					processDownload(url,length,callback, mCache);
+					processDownload(url,mLength,callback, mCache);
 					finsh(downloadTask);
 				}
 			});
@@ -103,7 +110,9 @@ public class DownloadManager {
 				}
 				long startSize = entity.getStart_position() + entity.getProgress_position();
 				long endSize = entity.getEnd_position();
+
 				sThreadPool.execute(new DownloadRunnable(startSize, endSize, url, callback, entity));
+
 			}
 		}
 		sLocalProgressPool.execute(new Runnable() {

@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
 	private ImageView mImageView;
 	private ProgressBar mProgress;
 
-	private int count = 0;
+	private volatile Integer count = 0;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -32,21 +32,24 @@ public class MainActivity extends AppCompatActivity {
 		//Logger.debug("SRX",file.getAbsolutePath());
 		//final String url = "http://szimg.mukewang.com/5763765d0001352105400300-360-202.jpg";
 		final String url = "http://shouji.360tpcdn.com/160901/84c090897cbf0158b498da0f42f73308/com.icoolme.android.weather_2016090200.apk";
+		//FileStorageManager.getInstance().deleteByName(url);
 		DownloadManager.getInstance().download(url, new DownloadCallback() {
             @Override
             public void success(File file) {
-	            if(count<1){
-		            count++;
-		            return;
-	            }
-//	            installApk(file);
-	            final Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-	            runOnUiThread(new Runnable() {
-		            @Override
-		            public void run() {
-			            mImageView.setImageBitmap(bitmap);
+	            synchronized (count) {
+		            if (count < 1) {
+			            count++;
+			            return;
 		            }
-	            });
+	            }
+	            installApk(file);
+//	            final Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+//	            runOnUiThread(new Runnable() {
+//		            @Override
+//		            public void run() {
+//			            mImageView.setImageBitmap(bitmap);
+//		            }
+//	            });
 	            Logger.debug("nate", "success " + file.getAbsoluteFile());
 
             }

@@ -40,10 +40,6 @@ public class DownloadHelper {
 		return mDao.insertOrReplace(entity);
 	}
 
-	public void insertSyn(DownloadEntity entity){
-		entity.setId(mDao.insertOrReplace(entity));
-	}
-
 	public List<DownloadEntity> getAll(String url){
 		List<DownloadEntity> list = mDao.queryBuilder()
 				                            .where(Properties.Download_url.eq(url))

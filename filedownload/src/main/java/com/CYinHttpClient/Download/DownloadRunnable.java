@@ -1,5 +1,7 @@
 package com.CYinHttpClient.Download;
 
+import android.os.Process;
+
 import com.CYinHttpClient.Download.File.FileStorageManager;
 import com.CYinHttpClient.Download.Http.DownloadCallback;
 import com.CYinHttpClient.Download.Http.HttpManager;
@@ -42,13 +44,19 @@ public class DownloadRunnable implements Runnable {
 
 	@Override
 	public void run() {
+		Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+		File file = FileStorageManager.getInstance().getFileByName(mUrl);
+		if(mStart>=mEnd){//已经下载完毕
+			mCallback.success(file);
+			return;
+		}
 		Response response = HttpManager.getInstance().syncRequestByRange(mUrl, mStart, mEnd);
 		if (response == null && mCallback != null) {
 			mCallback.fail(HttpManager.NETWORK_ERROR_CODE, "网络出问题了");
 		}
-		File file = FileStorageManager.getInstance().getFileByName(mUrl);
 
-		long finshProgress = mEntity.getProgress_position() == 0 ? 0 : mEntity.getProgress_position();
+
+		long finishProgress = mEntity.getProgress_position() == 0 ? 0 : mEntity.getProgress_position();
 		long progress = 0;
 		try {
 			RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rwd");
@@ -61,10 +69,10 @@ public class DownloadRunnable implements Runnable {
 				randomAccessFile.write(buffer, 0, len);
 				progress += len;
 				mEntity.setProgress_position(progress);
-				Logger.debug("nate", "progress  ----->" + progress);
+				//Logger.debug("nate", "progress  ----->" + progress);
 			}
 
-			mEntity.setProgress_position(mEntity.getProgress_position() + finshProgress);
+			mEntity.setProgress_position(mEntity.getProgress_position() + finishProgress);
 			randomAccessFile.close();
 			mCallback.success(file);
 		} catch (FileNotFoundException e) {
