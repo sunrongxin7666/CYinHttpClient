@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/dbgenerator" />
             <option value="$PROJECT_DIR$/filedownload" />
+            <option value="$PROJECT_DIR$/httpframework" />
             <option value="$PROJECT_DIR$/lib" />
           </set>
         </option>
