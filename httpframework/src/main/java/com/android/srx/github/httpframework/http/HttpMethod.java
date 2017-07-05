@@ -1,4 +1,4 @@
-package com.android.srx.github.httpframework;
+package com.android.srx.github.httpframework.http;
 
 /**
  * Created by sunrongxin on 2017/6/28.

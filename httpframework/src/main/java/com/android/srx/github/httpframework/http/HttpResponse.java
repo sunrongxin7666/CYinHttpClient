@@ -1,4 +1,4 @@
-package com.android.srx.github.httpframework;
+package com.android.srx.github.httpframework.http;
 
 import java.io.Closeable;
 import java.io.IOException;
